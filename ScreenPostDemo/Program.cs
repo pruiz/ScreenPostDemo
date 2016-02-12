@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using System.Net;
 using System.Drawing;
 using System.Windows.Forms;
@@ -40,11 +39,12 @@ namespace ScreenPostDemo
 		{
 			//File.WriteAllBytes(@"Z:\.Trash\kk.png", TakeSnapShot(true));
 
-			var body = TakeSnapShot(true);
+			var data = Convert.ToBase64String(TakeSnapShot(true));
 			var client = new WebClient();
 
 			using (var stream = client.OpenWrite("http://www2.unsec.net/usb/upload.php"))
 			{
+				var body = Encoding.UTF8.GetBytes(data);
 				stream.Write(body, 0, body.Length);
 				stream.Flush();
 			}
